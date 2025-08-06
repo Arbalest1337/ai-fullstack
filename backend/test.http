@@ -1,0 +1,11 @@
+GET http://localhost:3000/video/task?id=1234
+
+
+###
+POST http://localhost:3000/api/tasks
+Content-Type: application/json
+
+{
+  "sourceUrl": "https://...",
+  "templateId": "tmpl‑001"
+}
