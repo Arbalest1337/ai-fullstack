@@ -7,14 +7,14 @@ import { ZodValidationPipe } from '../../pipe/zod.pipe'
 export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 
-  @Post('generate')
+  @Post('text-to-video')
   @UsePipes(new ZodValidationPipe(generateVideoSchema))
-  async generateVideo(@Body() params: GenerateVideoDto) {
-    const res = await this.videoService.generateVideo(params)
+  async textToVideo(@Body() params: GenerateVideoDto) {
+    const res = await this.videoService.textToVideo(params)
     return res
   }
 
-  @Get('task')
+  @Get('detail')
   async getVideoByTaskId(@Query('id') taskId: string) {
     const res = await this.videoService.getVideoByTaskId(taskId)
     return res

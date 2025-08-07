@@ -8,17 +8,24 @@ export const createVideo = async ({ prompt, detail }) => {
   await db.insert(VideoTable).values(newVideo)
 }
 
-export const updateVideo = async detail => {
+export const updateVideo = async ({ detail, key }) => {
   const { task_id } = detail.output
-  await db.update(VideoTable).set({ detail }).where(eq(VideoTable.taskId, task_id))
+  await db.update(VideoTable).set({ detail, key }).where(eq(VideoTable.taskId, task_id))
 }
 
 export const getVideoByTaskId = async taskId => {
   const [res] = await db.select().from(VideoTable).where(eq(VideoTable.taskId, taskId))
-  return res
+  return key2Url(res)
 }
 
 export const getVideos = async params => {
   const res = await db.select().from(VideoTable)
-  return res
+  return res.map(key2Url)
+}
+
+const key2Url = item => {
+  return {
+    ...item,
+    url: item.key ? `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${item.key}` : ''
+  }
 }

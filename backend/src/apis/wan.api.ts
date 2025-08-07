@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common'
 
-export enum WanVideoStatus {
+export enum WanTaskStatus {
   PENDING = 'PENDING',
   RUNNING = 'RUNNING',
   SUCCEEDED = 'SUCCEEDED',
@@ -9,20 +9,20 @@ export enum WanVideoStatus {
   UNKNOWN = 'UNKNOWN'
 }
 
-export const generateWanVideo = async (prompt: string) => {
-  const url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis'
+const headers = {
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${process.env.WAN_API_KEY}`,
+  'X-DashScope-Async': 'enable'
+}
+
+export const WanText2Image = async (prompt: string) => {
+  const url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis'
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-DashScope-Async': 'enable',
-      Authorization: `Bearer ${process.env.VIDEO_API_KEY}`
-    },
+    headers,
     body: JSON.stringify({
-      model: 'wan2.2-t2v-plus',
-      input: {
-        prompt
-      }
+      model: 'wanx2.1-t2i-turbo',
+      input: { prompt }
     })
   })
   const data = await res.json()
@@ -30,14 +30,24 @@ export const generateWanVideo = async (prompt: string) => {
   return data
 }
 
-export const queryWanVideoTask = async (taskId: string) => {
-  const url = `https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`
+export const WanText2Video = async (prompt: string) => {
+  const url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis'
   const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${process.env.VIDEO_API_KEY}`
-    }
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      model: 'wanx2.1-t2v-turbo',
+      input: { prompt }
+    })
   })
+  const data = await res.json()
+  if (!res.ok) throw new InternalServerErrorException(data)
+  return data
+}
+
+export const getWanTask = async (taskId: string) => {
+  const url = `https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`
+  const res = await fetch(url, { method: 'GET', headers })
   const data = await res.json()
   if (!res.ok) throw new InternalServerErrorException(data)
   return data

@@ -1,24 +1,21 @@
-import { Injectable, Logger } from '@nestjs/common'
-import { InjectQueue } from '@nestjs/bullmq'
-import { Queue } from 'bullmq'
-import { generateWanVideo } from 'src/apis/wan.api'
+import { Injectable } from '@nestjs/common'
+import { WanText2Video } from 'src/apis/wan.api'
 import * as VideoSql from './video.sql'
-import { blue } from 'chalk'
+import { S3Service } from '../s3/s3.service'
+import { VideoProducer } from './video.producer'
+
 @Injectable()
 export class VideoService {
-  constructor(@InjectQueue('video') private queue: Queue) {}
-  private readonly logger = new Logger()
+  constructor(
+    private readonly s3Service: S3Service,
+    private readonly videoProducer: VideoProducer
+  ) {}
 
-  async addToQueue(taskId: string) {
-    await this.queue.add('videoTask', { taskId })
-    this.logger.log(`${blue('NEW')} ${taskId}`, 'VideoTask')
-  }
-
-  async generateVideo(params) {
+  async textToVideo(params) {
     const { prompt } = params
-    const res = await generateWanVideo(prompt)
+    const res = await WanText2Video(prompt)
     await VideoSql.createVideo({ prompt, detail: res })
-    await this.addToQueue(res.output.task_id)
+    await this.videoProducer.addToQueue(res.output.task_id)
     return res
   }
 
@@ -30,5 +27,11 @@ export class VideoService {
   async getVideos(params) {
     const res = await VideoSql.getVideos(params)
     return res
+  }
+
+  async updateVideoOnSucceed(detail) {
+    const { video_url } = detail.output
+    const { key } = await this.s3Service.putUrl(video_url, 'video')
+    await VideoSql.updateVideo({ detail, key })
   }
 }

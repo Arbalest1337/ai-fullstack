@@ -1,7 +1,7 @@
 import { integer, pgTable, timestamp, jsonb, text } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 
-export const VideoTable = pgTable('video', {
+export const ImageTable = pgTable('image', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   taskId: text().notNull(),
   key: text(),
