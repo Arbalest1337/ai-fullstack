@@ -8,7 +8,7 @@ export const createImage = async ({ prompt, detail }) => {
   await db.insert(ImageTable).values(newImage)
 }
 
-export const updateImage = async ({ detail, key }) => {
+export const updateImage = async ({ detail, key = null }) => {
   const { task_id } = detail.output
   await db.update(ImageTable).set({ detail, key }).where(eq(ImageTable.taskId, task_id))
 }

@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const generateImageSchema = z
   .object({
-    prompt: z.string(),
+    prompt: z.string()
   })
-  .required();
+  .required()
 
-export type GenerateImageDto = z.infer<typeof generateImageSchema>;
+export type GenerateImageDto = z.infer<typeof generateImageSchema>

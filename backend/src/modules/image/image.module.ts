@@ -7,7 +7,7 @@ import { ImageProcessor } from './image.processor'
 import { S3Module } from '../s3/s3.module'
 
 @Module({
-  imports: [BullModule.registerQueue({ name: 'image' }), S3Module],
+  imports: [BullModule.registerQueue({ name: 'image-queue' }), S3Module],
   controllers: [ImageController],
   providers: [ImageService, ImageProducer, ImageProcessor]
 })

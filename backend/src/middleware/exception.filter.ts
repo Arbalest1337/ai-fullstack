@@ -1,5 +1,14 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common'
+import {
+  ExceptionFilter,
+  InternalServerErrorException,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger
+} from '@nestjs/common'
 import { HttpAdapterHost } from '@nestjs/core'
+import { red } from 'chalk'
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -7,20 +16,22 @@ export class AllExceptionFilter implements ExceptionFilter {
 
   private readonly logger = new Logger()
 
-  catch(exception: Error, host: ArgumentsHost): void {
+  catch(exception: HttpException, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost
 
     const ctx = host.switchToHttp()
+    const req = ctx.getRequest()
 
     const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
 
+    const { stack, cause = '', message } = exception as any
     const responseBody = {
       code: httpStatus,
-      timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
-      error: exception instanceof HttpException ? exception.getResponse() : exception
+      message: cause ?? message
     }
-    this.logger.error(exception.stack, 'Error')
+
+    this.logger.error(`${httpStatus} ${req.method} ${req.ip} ${req.originalUrl} \n${cause} \n${stack}`, 'Error')
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus)
   }
 }

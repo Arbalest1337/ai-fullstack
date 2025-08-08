@@ -1,11 +1,12 @@
-GET http://localhost:3000/video/task?id=1234
-
+GET http://localhost:4000/image/detail?id=02666e37-4458-4fbe-a55f-77077029d901
 
 ###
-POST http://localhost:3000/api/tasks
+GET http://localhost:4000/image/chat?prompt=你是谁
+
+###
+POST http://localhost:4000/image/text2image
 Content-Type: application/json
 
 {
-  "sourceUrl": "https://...",
-  "templateId": "tmpl‑001"
+  "prompt":"童话世界"
 }

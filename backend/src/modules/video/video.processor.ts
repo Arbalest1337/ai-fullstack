@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job, DelayedError } from 'bullmq'
-import { blue } from 'chalk'
+import { blue, red } from 'chalk'
 import { WanTaskStatus, getWanTask } from 'src/apis/wan.api'
 import { VideoService } from './video.service'
 
-@Processor('video', { concurrency: 10 })
+@Processor('video-queue', { concurrency: 10 })
 @Injectable()
 export class VideoProcessor extends WorkerHost {
   constructor(private readonly videoService: VideoService) {
@@ -20,9 +20,12 @@ export class VideoProcessor extends WorkerHost {
     if ([WanTaskStatus.PENDING, WanTaskStatus.RUNNING].includes(task_status)) {
       await job.moveToDelayed(Date.now() + 10_000)
       throw new DelayedError()
-    } else if ([WanTaskStatus.SUCCEEDED, WanTaskStatus.FAILED, WanTaskStatus.CANCELED].includes(task_status)) {
-      await this.videoService.updateVideoOnSucceed(video)
-      this.logger.log(`${blue(task_status)} ${taskId}`, 'VideoTask')
+    } else if (task_status === WanTaskStatus.SUCCEEDED) {
+      await this.videoService.onVideoSucceed(video)
+      this.logger.log(`${blue(task_status)} ${taskId}`, 'VideoQueue')
+    } else if ([WanTaskStatus.FAILED, WanTaskStatus.CANCELED, WanTaskStatus.UNKNOWN].includes(task_status)) {
+      await this.videoService.onVideoFailed(video)
+      this.logger.log(`${red(task_status)} ${taskId}`, 'VideoQueue')
     }
   }
 }

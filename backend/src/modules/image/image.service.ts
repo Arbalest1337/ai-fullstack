@@ -29,9 +29,13 @@ export class ImageService {
     return res
   }
 
-  async updateImageOnSucceed(detail) {
+  async onImageSucceed(detail) {
     const { url } = detail.output.results[0]
     const { key } = await this.s3Service.putUrl(url, 'image')
     await ImageSql.updateImage({ detail, key })
+  }
+
+  async onImageFailed(detail) {
+    await ImageSql.updateImage({ detail })
   }
 }

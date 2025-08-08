@@ -7,7 +7,7 @@ import { S3Module } from '../s3/s3.module'
 import { VideoProducer } from './video.producer'
 
 @Module({
-  imports: [BullModule.registerQueue({ name: 'video' }), S3Module],
+  imports: [BullModule.registerQueue({ name: 'video-queue' }), S3Module],
   controllers: [VideoController],
   providers: [VideoService, VideoProducer, VideoProcessor]
 })

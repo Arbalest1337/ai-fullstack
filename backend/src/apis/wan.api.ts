@@ -11,8 +11,8 @@ export enum WanTaskStatus {
 
 const headers = {
   'Content-Type': 'application/json',
-  Authorization: `Bearer ${process.env.WAN_API_KEY}`,
-  'X-DashScope-Async': 'enable'
+  'X-DashScope-Async': 'enable',
+  Authorization: `Bearer ${process.env.WAN_API_KEY}`
 }
 
 export const WanText2Image = async (prompt: string) => {
@@ -22,11 +22,14 @@ export const WanText2Image = async (prompt: string) => {
     headers,
     body: JSON.stringify({
       model: 'wanx2.1-t2i-turbo',
-      input: { prompt }
+      input: { prompt },
+      parameters: {
+        n: 1
+      }
     })
   })
   const data = await res.json()
-  if (!res.ok) throw new InternalServerErrorException(data)
+  if (!res.ok) throw new InternalServerErrorException(data, { cause: '生成失败' })
   return data
 }
 

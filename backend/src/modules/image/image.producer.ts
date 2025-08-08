@@ -5,11 +5,11 @@ import { blue } from 'chalk'
 
 @Injectable()
 export class ImageProducer {
-  constructor(@InjectQueue('image') private queue: Queue) {}
+  constructor(@InjectQueue('image-queue') private queue: Queue) {}
   private readonly logger = new Logger()
 
   async addToQueue(taskId: string) {
-    await this.queue.add('ImageTask', { taskId })
-    this.logger.log(`${blue('NEW')} ${taskId}`, 'ImageTask')
+    await this.queue.add('ImageQueue', { taskId })
+    this.logger.log(`${blue('NEW')} ${taskId}`, 'ImageQueue')
   }
 }

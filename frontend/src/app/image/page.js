@@ -89,6 +89,7 @@ export default function Image() {
       {images.map(item => (
         <div key={item.taskId} className="p-4">
           <h4>{item.prompt}</h4>
+          <h4>{item.taskId}</h4>
           <img src={item.url} />
         </div>
       ))}

@@ -13,8 +13,9 @@ import { ImageModule } from './modules/image/image.module'
   imports: [
     BullModule.forRoot({
       connection: {
-        host: 'localhost',
-        port: 6379
+        // host: 'localhost',
+        // port: 6379,
+        url: process.env.REDIS_URL
       }
     }),
     S3Module,

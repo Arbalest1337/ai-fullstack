@@ -29,9 +29,13 @@ export class VideoService {
     return res
   }
 
-  async updateVideoOnSucceed(detail) {
+  async onVideoSucceed(detail) {
     const { video_url } = detail.output
     const { key } = await this.s3Service.putUrl(video_url, 'video')
     await VideoSql.updateVideo({ detail, key })
+  }
+
+  async onVideoFailed(detail) {
+    await VideoSql.updateVideo({ detail })
   }
 }

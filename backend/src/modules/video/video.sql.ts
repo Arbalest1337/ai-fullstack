@@ -8,7 +8,7 @@ export const createVideo = async ({ prompt, detail }) => {
   await db.insert(VideoTable).values(newVideo)
 }
 
-export const updateVideo = async ({ detail, key }) => {
+export const updateVideo = async ({ detail, key = null }) => {
   const { task_id } = detail.output
   await db.update(VideoTable).set({ detail, key }).where(eq(VideoTable.taskId, task_id))
 }
