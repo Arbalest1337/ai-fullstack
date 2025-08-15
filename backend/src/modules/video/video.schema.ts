@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const generateVideoSchema = z
   .object({
-    prompt: z.string(),
+    prompt: z.string()
   })
-  .required();
+  .required()
 
-export type GenerateVideoDto = z.infer<typeof generateVideoSchema>;
+export type GenerateVideoDto = z.infer<typeof generateVideoSchema>

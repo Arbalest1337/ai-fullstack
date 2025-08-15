@@ -1,7 +1,9 @@
 'use client'
 import { useState } from 'react'
+import useRequest from '@/hooks/useRequest'
 
 export default function Image() {
+  const request = useRequest()
   const [input, setInput] = useState('')
   const [taskId, setTaskId] = useState('')
   const [loading, setLoading] = useState(false)
@@ -15,19 +17,12 @@ export default function Image() {
     try {
       setLoading(true)
       if (!input) return
-      const res = await fetch('http://localhost:4000/image/text-to-image', {
+      const { taskId } = await request({
+        url: '/image/text-to-image',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          prompt: input
-        })
+        data: { prompt: input }
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error.message)
-      const { task_id } = data.data.output
-      setTaskId(task_id)
+      setTaskId(taskId)
     } finally {
       setLoading(false)
     }
@@ -36,13 +31,11 @@ export default function Image() {
   const onCheckTask = async taskId => {
     try {
       setChecking(true)
-      const res = await fetch(`http://localhost:4000/image/detail?id=${taskId}`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error.message)
-      const { task_status } = data.data.detail.output
+      const { detail, url } = await request({ url: `/image/detail?id=${taskId}` })
+      const { task_status } = detail.output
       setImageStatus(task_status)
       if (task_status === 'SUCCEEDED') {
-        setImageSrc(data.data.url)
+        setImageSrc(url)
       }
     } finally {
       setChecking(false)
@@ -52,10 +45,8 @@ export default function Image() {
   const onQuery = async () => {
     try {
       setQuerying(true)
-      const res = await fetch(`http://localhost:4000/image/query`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error.message)
-      setImages(data.data)
+      const res = await request({ url: `/image/query` })
+      setImages(res)
     } finally {
       setQuerying(false)
     }
@@ -63,18 +54,19 @@ export default function Image() {
 
   return (
     <div className="p-4">
-      <input value={input} onChange={e => setInput(e.target.value)} />
+      <h2>Prompt</h2>
+      <input className="border mr-2" value={input} onChange={e => setInput(e.target.value)} />
       <button disabled={loading} onClick={() => onSubmit()}>
         {loading ? 'Loading' : 'Submit'}
       </button>
 
       <h4 className="mt-8">Task</h4>
-      <input value={taskId} onChange={e => setTaskId(e.target.value)} />
+      <input className="border mr-2" value={taskId} onChange={e => setTaskId(e.target.value)} />
       <button disabled={checking} onClick={() => onCheckTask(taskId)}>
         {checking ? 'Loading' : 'Check'}
       </button>
 
-      <h2 className="mt-8">Result</h2>
+      <h2 className="mt-8">Status</h2>
       {imageSrc && (
         <>
           <h4>{imageStatus}</h4>

@@ -1,16 +1,18 @@
-import { Controller, Get, Post, Body, Query, UsePipes } from '@nestjs/common'
+import { Controller, Get, Post, Body, Query } from '@nestjs/common'
 import { VideoService } from './video.service'
 import { GenerateVideoDto, generateVideoSchema } from './video.schema'
-import { ZodValidationPipe } from '../../pipe/zod.pipe'
+import { CurrentUser } from 'src/decorators/currentUser.decorator'
+import { Auth } from 'src/decorators/auth.decorator'
+import { ZodBody } from 'src/decorators/zod-body.decorator'
 
+@Auth()
 @Controller('video')
 export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 
   @Post('text-to-video')
-  @UsePipes(new ZodValidationPipe(generateVideoSchema))
-  async textToVideo(@Body() params: GenerateVideoDto) {
-    const res = await this.videoService.textToVideo(params)
+  async textToVideo(@ZodBody(generateVideoSchema) params: GenerateVideoDto, @CurrentUser() user) {
+    const res = await this.videoService.textToVideo({ ...params, creatorId: user.id })
     return res
   }
 

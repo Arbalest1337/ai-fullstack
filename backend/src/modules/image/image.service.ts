@@ -12,11 +12,11 @@ export class ImageService {
   ) {}
 
   async textToImage(params) {
-    const { prompt } = params
+    const { prompt, creatorId } = params
     const res = await WanText2Image(prompt)
-    await ImageSql.createImage({ prompt, detail: res })
+    const result = await ImageSql.createImage({ prompt, detail: res, creatorId })
     await this.imageProducer.addToQueue(res.output.task_id)
-    return res
+    return result
   }
 
   async getImageByTaskId(taskId) {

@@ -1,16 +1,21 @@
-import { Controller, Get, Post, Body, Query, UsePipes } from '@nestjs/common'
+import { Controller, Get, Post, Query } from '@nestjs/common'
 import { ImageService } from 'src/modules/image/image.service'
 import { GenerateImageDto, generateImageSchema } from 'src/modules/image/image.schema'
-import { ZodValidationPipe } from '../../pipe/zod.pipe'
+import { CurrentUser } from 'src/decorators/currentUser.decorator'
+import { Auth } from 'src/decorators/auth.decorator'
+import { ZodBody } from 'src/decorators/zod-body.decorator'
 
+@Auth()
 @Controller('image')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Post('text-to-image')
-  @UsePipes(new ZodValidationPipe(generateImageSchema))
-  async textToImage(@Body() params: GenerateImageDto) {
-    const res = await this.imageService.textToImage(params)
+  async textToImage(
+    @ZodBody(generateImageSchema) body: GenerateImageDto,
+    @CurrentUser('id') creatorId
+  ) {
+    const res = await this.imageService.textToImage({ ...body, creatorId })
     return res
   }
 

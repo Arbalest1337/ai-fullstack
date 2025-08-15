@@ -1,11 +1,12 @@
 import { db } from 'src/db'
 import { ImageTable } from 'src/db/schema/image'
-import { eq } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 
-export const createImage = async ({ prompt, detail }) => {
+export const createImage = async ({ prompt, detail, creatorId }) => {
   const { task_id } = detail.output
-  const newImage = { prompt, taskId: task_id, detail }
-  await db.insert(ImageTable).values(newImage)
+  const newImage = { prompt, taskId: task_id, detail, creatorId }
+  const [res] = await db.insert(ImageTable).values(newImage).returning()
+  return res
 }
 
 export const updateImage = async ({ detail, key = null }) => {
@@ -19,7 +20,7 @@ export const getImageByTaskId = async taskId => {
 }
 
 export const getImages = async params => {
-  const res = await db.select().from(ImageTable)
+  const res = await db.select().from(ImageTable).orderBy(desc(ImageTable.createTime))
   return res.map(key2Url)
 }
 

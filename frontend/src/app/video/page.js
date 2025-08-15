@@ -1,7 +1,9 @@
 'use client'
 import { useState } from 'react'
+import useRequest from '@/hooks/useRequest'
 
 export default function Video() {
+  const request = useRequest()
   const [input, setInput] = useState('')
   const [taskId, setTaskId] = useState('')
   const [loading, setLoading] = useState(false)
@@ -15,20 +17,14 @@ export default function Video() {
     try {
       setLoading(true)
       if (!input) return
-      const res = await fetch('http://localhost:4000/video/text-to-video', {
+      const { taskId } = await request({
+        url: '/video/text-to-video',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+        data: {
           prompt: input
-        })
+        }
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error.message)
-      const { task_id } = data.data.output
-      setTaskId(task_id)
-      console.log({ data })
+      setTaskId(taskId)
     } finally {
       setLoading(false)
     }
@@ -37,13 +33,12 @@ export default function Video() {
   const onCheckTask = async taskId => {
     try {
       setChecking(true)
-      const res = await fetch(`http://localhost:4000/video/detail?id=${taskId}`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error.message)
-      const { task_status } = data.data.detail.output
+      const res = await request({ url: `/video/detail?id=${taskId}` })
+      const { detail, url } = await res
+      const { task_status } = detail.output
       setVideoStatus(task_status)
       if (task_status === 'SUCCEEDED') {
-        setVideoSrc(data.data.url)
+        setVideoSrc(url)
       }
     } finally {
       setChecking(false)
@@ -53,10 +48,8 @@ export default function Video() {
   const onQuery = async () => {
     try {
       setQuerying(true)
-      const res = await fetch(`http://localhost:4000/video/query`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error.message)
-      setVideos(data.data)
+      const res = await request({ url: `/video/query` })
+      setVideos(res)
     } finally {
       setQuerying(false)
     }
@@ -64,13 +57,14 @@ export default function Video() {
 
   return (
     <div className="p-4">
-      <input value={input} onChange={e => setInput(e.target.value)} />
+      <h4>Prompt</h4>
+      <input className="border mr-2" value={input} onChange={e => setInput(e.target.value)} />
       <button disabled={loading} onClick={() => onSubmit()}>
         {loading ? 'Loading' : 'Submit'}
       </button>
 
       <h4 className="mt-8">Task</h4>
-      <input value={taskId} onChange={e => setTaskId(e.target.value)} />
+      <input className="border mr-2" value={taskId} onChange={e => setTaskId(e.target.value)} />
       <button disabled={checking} onClick={() => onCheckTask(taskId)}>
         {checking ? 'Loading' : 'Check'}
       </button>

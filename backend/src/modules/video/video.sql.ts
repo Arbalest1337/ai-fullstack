@@ -1,11 +1,12 @@
 import { db } from 'src/db'
 import { VideoTable } from 'src/db/schema/video'
-import { eq } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 
-export const createVideo = async ({ prompt, detail }) => {
+export const createVideo = async ({ prompt, detail, creatorId }) => {
   const { task_id } = detail.output
-  const newVideo = { prompt, taskId: task_id, detail }
-  await db.insert(VideoTable).values(newVideo)
+  const newVideo = { prompt, taskId: task_id, detail, creatorId }
+  const [res] = await db.insert(VideoTable).values(newVideo).returning()
+  return res
 }
 
 export const updateVideo = async ({ detail, key = null }) => {
@@ -19,7 +20,7 @@ export const getVideoByTaskId = async taskId => {
 }
 
 export const getVideos = async params => {
-  const res = await db.select().from(VideoTable)
+  const res = await db.select().from(VideoTable).orderBy(desc(VideoTable.createTime))
   return res.map(key2Url)
 }
 

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ResponseInterceptor } from './interception/response.interception'
 import { HttpStatus } from '@nestjs/common'
+import { AuthGuard } from './guard/auth.guard'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)

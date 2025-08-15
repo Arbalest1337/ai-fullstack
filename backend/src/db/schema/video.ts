@@ -1,13 +1,13 @@
-import { integer, pgTable, timestamp, jsonb, text } from 'drizzle-orm/pg-core'
-import { sql } from 'drizzle-orm'
+import { pgTable, jsonb, text } from 'drizzle-orm/pg-core'
+import { primaryId, createTime } from '../custom'
+import { creatorId } from '../custom/user'
 
 export const VideoTable = pgTable('video', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: primaryId(),
   taskId: text().notNull(),
   key: text(),
   detail: jsonb(),
   prompt: text().notNull(),
-  createTime: timestamp({ withTimezone: true })
-    .notNull()
-    .default(sql`now()`)
+  creatorId: creatorId(),
+  createTime: createTime()
 })

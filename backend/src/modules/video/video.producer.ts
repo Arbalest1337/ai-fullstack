@@ -3,13 +3,14 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Queue } from 'bullmq'
 import { blue } from 'chalk'
 
+export const VIDEO_QUEUE = 'video-queue'
 @Injectable()
 export class VideoProducer {
-  constructor(@InjectQueue('video-queue') private queue: Queue) {}
-  private readonly logger = new Logger()
+  constructor(@InjectQueue(VIDEO_QUEUE) private queue: Queue) {}
+  private readonly logger = new Logger(VIDEO_QUEUE)
 
   async addToQueue(taskId: string) {
-    await this.queue.add('VideoQueue', { taskId })
-    this.logger.log(`${blue('NEW')} ${taskId}`, 'VideoQueue')
+    await this.queue.add(`${VIDEO_QUEUE}-job`, { taskId }, { delay: 30_000 })
+    this.logger.log(`${blue('JOB')} ${taskId}`)
   }
 }

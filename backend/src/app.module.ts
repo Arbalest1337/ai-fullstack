@@ -5,9 +5,15 @@ import { BullModule } from '@nestjs/bullmq'
 import { LoggerMiddleware } from './middleware/logger.middleware'
 import { APP_FILTER } from '@nestjs/core'
 import { AllExceptionFilter } from './middleware/exception.filter'
-import { VideoModule } from './modules/video/video.module'
 import { S3Module } from './modules/s3/s3.module'
+import { VideoModule } from './modules/video/video.module'
 import { ImageModule } from './modules/image/image.module'
+import { PostModule } from './modules/post/post.module'
+import { ScheduleModule } from '@nestjs/schedule'
+import { SchedulerModule } from './modules/scheduler/scheduler.module'
+import { PostScheduleModule } from './modules/post-schedule/post-schedule.module'
+import { UserModule } from './modules/user/user.module'
+import { AuthModule } from './modules/auth/auth.module'
 
 @Module({
   imports: [
@@ -18,9 +24,15 @@ import { ImageModule } from './modules/image/image.module'
         url: process.env.REDIS_URL
       }
     }),
+    ScheduleModule.forRoot(),
+    SchedulerModule,
     S3Module,
     VideoModule,
-    ImageModule
+    ImageModule,
+    PostModule,
+    PostScheduleModule,
+    UserModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [

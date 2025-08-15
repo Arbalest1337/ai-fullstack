@@ -12,11 +12,11 @@ export class VideoService {
   ) {}
 
   async textToVideo(params) {
-    const { prompt } = params
+    const { prompt, creatorId } = params
     const res = await WanText2Video(prompt)
-    await VideoSql.createVideo({ prompt, detail: res })
+    const result = await VideoSql.createVideo({ prompt, detail: res, creatorId })
     await this.videoProducer.addToQueue(res.output.task_id)
-    return res
+    return result
   }
 
   async getVideoByTaskId(taskId) {
