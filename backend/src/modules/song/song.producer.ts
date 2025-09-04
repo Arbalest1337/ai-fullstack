@@ -5,20 +5,20 @@ import { blue } from 'chalk'
 import { QUEUE_TASK } from 'src/utils/queue'
 
 @Injectable()
-export class ImageProducer {
-  constructor(@InjectQueue(QUEUE_TASK.IMAGE) private queue: Queue) {}
-  private readonly logger = new Logger(QUEUE_TASK.IMAGE)
+export class SongProducer {
+  constructor(@InjectQueue(QUEUE_TASK.SONG) private queue: Queue) {}
+  private readonly logger = new Logger(QUEUE_TASK.SONG)
 
   async addToQueue(taskId: string) {
     await this.queue.add(
-      `${QUEUE_TASK.IMAGE}-job`,
+      `${QUEUE_TASK.SONG}-job`,
       { taskId },
       {
-        delay: 6_000,
+        delay: 20_000,
         attempts: 2,
         backoff: {
           type: 'fixed',
-          delay: 12_000
+          delay: 20_000
         }
       }
     )

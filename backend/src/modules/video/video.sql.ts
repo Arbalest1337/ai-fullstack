@@ -2,9 +2,9 @@ import { db } from 'src/db'
 import { VideoTable } from 'src/db/schema/video'
 import { eq, desc } from 'drizzle-orm'
 
-export const createVideo = async ({ prompt, detail, creatorId }) => {
+export const createVideo = async ({ prompt, imgUrl, detail, creatorId }) => {
   const { task_id } = detail.output
-  const newVideo = { prompt, taskId: task_id, detail, creatorId }
+  const newVideo = { prompt, imgUrl, taskId: task_id, detail, creatorId }
   const [res] = await db.insert(VideoTable).values(newVideo).returning()
   return res
 }
@@ -16,17 +16,10 @@ export const updateVideo = async ({ detail, key = null }) => {
 
 export const getVideoByTaskId = async taskId => {
   const [res] = await db.select().from(VideoTable).where(eq(VideoTable.taskId, taskId))
-  return key2Url(res)
+  return res
 }
 
-export const getVideos = async params => {
+export const queryVideos = async params => {
   const res = await db.select().from(VideoTable).orderBy(desc(VideoTable.createTime))
-  return res.map(key2Url)
-}
-
-const key2Url = item => {
-  return {
-    ...item,
-    url: item.key ? `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${item.key}` : ''
-  }
+  return res
 }

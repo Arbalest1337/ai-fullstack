@@ -1,6 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useRequest from '@/hooks/useRequest'
+import PostItem from '@/components/Post/Post'
 
 export default function Post() {
   const request = useRequest()
@@ -48,6 +49,10 @@ export default function Post() {
     }
   }
 
+  useEffect(() => {
+    onQueryPostAndRepost()
+  }, [])
+
   return (
     <>
       <div className="p-4">
@@ -61,17 +66,7 @@ export default function Post() {
           {querying ? 'Loading' : 'Refresh'}
         </button>
         {postAndRepost.map((item, index) => (
-          <div className="p-8" key={index}>
-            {item.repostId && (
-              <>
-                <div>Repost ID: {item.repostId}</div>
-                <div>Repost Creator: {item.repostCreatorId}</div>
-              </>
-            )}
-            <div>ID: {item.id}</div>
-            <div>Post Creator: {item.creatorId}</div>
-            <div>{item.content}</div>
-          </div>
+          <PostItem post={item} key={item.id + item.repostId} />
         ))}
       </div>
     </>

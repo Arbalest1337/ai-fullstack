@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query } from '@nestjs/common'
+import { Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { ImageService } from 'src/modules/image/image.service'
 import { GenerateImageDto, generateImageSchema } from 'src/modules/image/image.schema'
 import { CurrentUser } from 'src/decorators/currentUser.decorator'
@@ -19,15 +19,15 @@ export class ImageController {
     return res
   }
 
-  @Get('detail')
-  async getImageByTaskId(@Query('id') taskId: string) {
-    const res = await this.imageService.getImageByTaskId(taskId)
+  @Get('query')
+  async queryImages(@Query() params) {
+    const res = await this.imageService.queryImages(params)
     return res
   }
 
-  @Get('query')
-  async getImages(@Query() params) {
-    const res = await this.imageService.getImages(params)
+  @Get(':taskId')
+  async getImageByTaskId(@Param('taskId') taskId: string) {
+    const res = await this.imageService.getImageByTaskId(taskId)
     return res
   }
 }

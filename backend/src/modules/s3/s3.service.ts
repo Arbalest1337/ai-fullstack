@@ -34,9 +34,15 @@ export class S3Service {
     }
   }
 
+  async putBase64(base64, folder) {
+    const buffer = Buffer.from(base64, 'base64')
+    return await this.put(buffer, folder)
+  }
+
   async putUrl(url, folder = 'uploads') {
     const res = await fetch(url)
-    if (!res.ok || !res.body) throw new BadRequestException(`Failed to fetch file: ${res.statusText}`)
+    if (!res.ok || !res.body)
+      throw new BadRequestException(`Failed to fetch file: ${res.statusText}`)
     const buffer = Buffer.from(await res.arrayBuffer())
     const result = await this.put(buffer, folder)
     return result

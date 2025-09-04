@@ -1,5 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common'
 
+const BASE_URL = `https://dashscope.aliyuncs.com`
+
 export enum WanTaskStatus {
   PENDING = 'PENDING',
   RUNNING = 'RUNNING',
@@ -16,12 +18,12 @@ const headers = {
 }
 
 export const WanText2Image = async (prompt: string) => {
-  const url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis'
+  const url = `${BASE_URL}/api/v1/services/aigc/text2image/image-synthesis`
   const res = await fetch(url, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      model: 'wanx2.1-t2i-turbo',
+      model: 'wanx2.1-t2i-turbo1',
       input: { prompt },
       parameters: {
         n: 1
@@ -29,12 +31,12 @@ export const WanText2Image = async (prompt: string) => {
     })
   })
   const data = await res.json()
-  if (!res.ok) throw new InternalServerErrorException(data, { cause: '生成失败' })
+  if (!res.ok) throw new InternalServerErrorException(data)
   return data
 }
 
 export const WanText2Video = async (prompt: string) => {
-  const url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis'
+  const url = `${BASE_URL}/api/v1/services/aigc/video-generation/video-synthesis`
   const res = await fetch(url, {
     method: 'POST',
     headers,
@@ -48,8 +50,26 @@ export const WanText2Video = async (prompt: string) => {
   return data
 }
 
-export const getWanTask = async (taskId: string) => {
-  const url = `https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`
+export const WanImage2Video = async ({ prompt, imgUrl: img_url }) => {
+  const url = `${BASE_URL}/api/v1/services/aigc/video-generation/video-synthesis`
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      model: 'wan2.2-i2v-flash',
+      input: { prompt, img_url },
+      parameters: {
+        resolution: '480P'
+      }
+    })
+  })
+  const data = await res.json()
+  if (!res.ok) throw new InternalServerErrorException(data)
+  return data
+}
+
+export const queryWanTask = async (taskId: string) => {
+  const url = `${BASE_URL}/api/v1/tasks/${taskId}`
   const res = await fetch(url, { method: 'GET', headers })
   const data = await res.json()
   if (!res.ok) throw new InternalServerErrorException(data)

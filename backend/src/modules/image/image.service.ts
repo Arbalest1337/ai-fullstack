@@ -24,8 +24,8 @@ export class ImageService {
     return res
   }
 
-  async getImages(params) {
-    const res = await ImageSql.getImages(params)
+  async queryImages(params) {
+    const res = await ImageSql.queryImages(params)
     return res
   }
 

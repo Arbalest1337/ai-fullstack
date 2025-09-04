@@ -68,6 +68,7 @@ export default function PostSchedule() {
   return (
     <>
       <div className="p-4">
+        <div></div>
         <h4>Post Schedule</h4>
         <input className="border block" value={input} onChange={e => setInput(e.target.value)} />
         <button disabled={loading} onClick={() => onSubmit()}>
@@ -82,7 +83,7 @@ export default function PostSchedule() {
           schedules.map(item => (
             <div
               className={`p-8 ${selected === item.id && 'border border-amber-50'}`}
-              key={item.keywords}
+              key={item.id}
               onClick={() => setSelected(item.id)}
             >
               <div>{item.id}</div>

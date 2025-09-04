@@ -3,11 +3,13 @@ import { PostScheduleController } from './post-schedule.controller'
 import { PostScheduleService } from './post-schedule.service'
 import { PostModule } from '../post/post.module'
 import { BullModule } from '@nestjs/bullmq'
-import { PostScheduleProducer, POST_SCHEDULE_QUEUE } from './post-schedule.producer'
+import { PostScheduleProducer } from './post-schedule.producer'
 import { PostScheduleProcessor } from './post-schedule.processor'
+import { S3Module } from '../s3/s3.module'
+import { QUEUE_TASK } from 'src/utils/queue'
 
 @Module({
-  imports: [BullModule.registerQueue({ name: POST_SCHEDULE_QUEUE }), PostModule],
+  imports: [BullModule.registerQueue({ name: QUEUE_TASK.POST_SCHEDULE }), PostModule, S3Module],
   controllers: [PostScheduleController],
   providers: [PostScheduleService, PostScheduleProducer, PostScheduleProcessor]
 })

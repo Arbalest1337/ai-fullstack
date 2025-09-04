@@ -4,8 +4,8 @@ import * as PostSql from './post.sql'
 @Injectable()
 export class PostService {
   async createPost(params) {
-    const { content, creatorId } = params
-    const post = await PostSql.createPost({ content, creatorId })
+    const { content, creatorId, media = [], scheduleId } = params
+    const post = await PostSql.createPost({ content, creatorId, media, scheduleId })
     const embedding = await getEmbedding(content)
     await PostSql.createPostEmbedding({ postId: post.id, embedding })
     return post

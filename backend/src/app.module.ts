@@ -14,6 +14,7 @@ import { SchedulerModule } from './modules/scheduler/scheduler.module'
 import { PostScheduleModule } from './modules/post-schedule/post-schedule.module'
 import { UserModule } from './modules/user/user.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { SongModule } from './modules/song/song.module'
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { AuthModule } from './modules/auth/auth.module'
     PostModule,
     PostScheduleModule,
     UserModule,
-    AuthModule
+    AuthModule,
+    SongModule
   ],
   controllers: [AppController],
   providers: [

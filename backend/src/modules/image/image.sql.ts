@@ -19,7 +19,7 @@ export const getImageByTaskId = async taskId => {
   return key2Url(res)
 }
 
-export const getImages = async params => {
+export const queryImages = async params => {
   const res = await db.select().from(ImageTable).orderBy(desc(ImageTable.createTime))
   return res.map(key2Url)
 }

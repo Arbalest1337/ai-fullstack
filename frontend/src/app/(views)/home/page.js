@@ -1,11 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useRequest from '@/hooks/useRequest'
-import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const request = useRequest()
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [userInfo, setUserInfo] = useState(null)
 
@@ -20,39 +18,12 @@ export default function Home() {
     }
   }
 
-  const menu = [
-    {
-      name: 'Image',
-      path: '/image'
-    },
-    {
-      name: 'Video',
-      path: '/video'
-    },
-    {
-      name: 'Post',
-      path: '/post'
-    },
-    {
-      name: 'Post Schedule',
-      path: '/post-schedule'
-    }
-  ]
+  useEffect(() => {
+    onGetUserInfo()
+  }, [])
 
   return (
     <>
-      <div>
-        {menu.map(({ name, path }) => (
-          <div
-            key={path}
-            onClick={() => router.push(path)}
-            className="m-8 font-[20px] cursor-pointer bold"
-          >
-            {name}
-          </div>
-        ))}
-      </div>
-
       <button className="block my-4" disabled={loading} onClick={() => onGetUserInfo()}>
         {loading ? 'Loading...' : 'Get UserInfo'}
       </button>
